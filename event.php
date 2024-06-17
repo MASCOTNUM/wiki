@@ -117,7 +117,8 @@ function unsubLink($nompre,$mail) {
 
 function formInscription()
 {
-    global $id, $secret1, $secret2,$captch;
+    global $id, $secret1, $secret2,$captch,$expired;
+	 if($expired) return;
     gen_xtok("event");
     ?>
 <form method="post">
@@ -154,18 +155,25 @@ if ($_GET['action']!='remove' && !hash_equals(hash("sha256", $secret1 . $id . $s
     exit;
 }
 
-print str_replace(array("~~CSSTS~~","~~TITLE~~","~~SIDEBAR~~","~~ACTIONS~~","~~METADESC~~"),
-array(filemtime("static/mstyle.css"),"Event $id",backl(),"<a href=\"?action=view&id=$id&sectok=".hash("sha256",$secret1.$id.$secret2)."\">List of participants</a><a href=\"?id=$id&sectok=".hash("sha256",$secret1.$id.$secret2)."\">Registration form</a>",""), 
-file_get_contents("conf/htmlhead.tmpl"));
-print "<h1>Event " . $id . "</h1>";
-
 try {
     $db = new SQLite3("$dbevents");
+	 $res = $db->query("SELECT FROM expire WHERE id='".$db->escapeString($id)."'");
+	 $expired = ($res->fetchArray() !== false);
 } catch (Exception $e) {
     die("db error " . $e->getMessage());
 }
 
+$regform=($expired ? "" : "<a href=\"?id=$id&sectok=".hash("sha256",$secret1.$id.$secret2)."\">Registration form</a>");
+print str_replace(array("~~CSSTS~~","~~TITLE~~","~~SIDEBAR~~","~~ACTIONS~~","~~METADESC~~"),
+array(filemtime("static/mstyle.css"),"Event $id",backl(),"<a href=\"?action=view&id=$id&sectok=".hash("sha256",$secret1.$id.$secret2)."\">List of participants</a>$regform",""), 
+file_get_contents("conf/htmlhead.tmpl"));
+print "<h1>Event " . $id . "</h1>";
+
+
 if (!empty($_POST['nom'])) {
+	if($expired) {
+		die("expired");
+	}
     if (chk_xtok("event") || checkRecaptcha()) {
         $prenom = protect(htmlspecialchars(preg_replace("/,/", " ", $_POST["prenom"])));
         $affil = str_replace("&amp;","&",san_csv_ext(htmlspecialchars(preg_replace("/,/", " ", $_POST["affil"]))));
