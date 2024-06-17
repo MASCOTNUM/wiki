@@ -157,7 +157,7 @@ if ($_GET['action']!='remove' && !hash_equals(hash("sha256", $secret1 . $id . $s
 
 try {
     $db = new SQLite3("$dbevents");
-	 $res = $db->query("SELECT FROM expire WHERE id='".$db->escapeString($id)."'");
+	 $res = $db->query("SELECT * FROM expire WHERE id='".$db->escapeString($id)."'");
 	 $expired = ($res->fetchArray() !== false);
 } catch (Exception $e) {
     die("db error " . $e->getMessage());
