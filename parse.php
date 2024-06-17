@@ -362,10 +362,10 @@ function parse_line($l)
 								}
 								$out .= "<div class=\"$cl\">";
 						} elseif (strpos($s, "FORM") !== false) {
-								$expire = false;
+								$expire = true;
 								$out .= "<ul><li><a href=event.php?action=view&id=$pageId&sectok=$sectok>List of participants</a>";
 								if ($s != "FORM expire") {
-									$expire = true;
+									$expire = false;
 									$out .= "<li><a href=event.php?id=$pageId&sectok=$sectok>Registration form</a>";
 								}
 								$out .= "</ul>";
