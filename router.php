@@ -39,11 +39,12 @@ if($id===false) {
 	header('Location: '.$id);
 } else {
 	$req=$_SERVER['REQUEST_URI'];
-	if($p!==false) 
+	if($p!==false) {
 		$qs=substr($req,$p+1);
-	parse_str($qs, $tab);
-	foreach($tab as $k=>$v) {
-		$_GET[$k]=$_REQUEST[$k]=$v;
+		parse_str($qs, $tab);
+		foreach($tab as $k=>$v) {
+			$_GET[$k]=$_REQUEST[$k]=$v;
+		}
 	}
 	$_GET['id']=$id;
 	include 'index.php';
