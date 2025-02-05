@@ -341,6 +341,33 @@ dt.ChampRes {
     background-color: #ffffb0;
 }
 
+.redt {
+	color: #9b0303;
+}
+
+.bluet {
+	color: #0f018c;
+}
+
+.greent {
+	color: #066827;
+}
+
+.redt {
+	color: #9b0303;
+	display: inline;
+}
+
+.bluet {
+	color: #0f018c;
+	display: inline;
+}
+
+.greent {
+	color: #066827;
+	display: inline;
+}
+
 .subtoc {
 	margin-left: 30px;
 }
