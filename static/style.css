@@ -342,30 +342,15 @@ dt.ChampRes {
 }
 
 .redt {
-	color: #9b0303;
+	color: #f91b5a;
 }
 
 .bluet {
-	color: #0f018c;
+	color: #40a8f7;
 }
 
 .greent {
-	color: #066827;
-}
-
-.redti {
-	color: #9b0303;
-	display: inline;
-}
-
-.blueti {
-	color: #0f018c;
-	display: inline;
-}
-
-.greenti {
-	color: #066827;
-	display: inline;
+	color: #3cc138;
 }
 
 .subtoc {
