@@ -167,13 +167,14 @@ function parse_inline($l, $parseTags = true)
 					break;
 				case "'":
 					if($i + 1 < $n && $l[$i+1]==="~") {
-						$i++;
+						$i+=2;
 						$spn="";
 						while($i < $n && $l[$i]!==" ") $spn.=$l[$i++];
 						$i++;
 						$txt="";
 						while($i < $n) {
 							if($i + 1 < $n && $l[$i+1]==="'" && $l[$i]==="'") {
+								$i++;
 								$out .= "<span class=$spn>$txt</span>";
 								break;
 							} else {
