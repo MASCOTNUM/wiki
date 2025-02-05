@@ -165,7 +165,7 @@ function parse_inline($l, $parseTags = true)
 						$out .= $l[$i];
 					}
 					break;
-				case "'":
+				case "@":
 					if($i + 1 < $n && $l[$i+1]==="~") {
 						$i+=2;
 						$spn="";
@@ -173,7 +173,7 @@ function parse_inline($l, $parseTags = true)
 						$i++;
 						$txt="";
 						while($i < $n) {
-							if($i + 1 < $n && $l[$i+1]==="'" && $l[$i]==="'") {
+							if($i + 1 < $n && $l[$i+1]==="@" && $l[$i]==="@") {
 								$i++;
 								$out .= "<span class=$spn>$txt</span>";
 								break;
