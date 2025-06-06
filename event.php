@@ -202,7 +202,7 @@ if (!empty($_POST['nom'])) {
         $email = protect(htmlspecialchars(preg_replace("/,/", " ", $_POST["email"])));
 		  $comment = false;
 		  if(isset($_POST["comment"])) {
-			  $comment = protect(htmlspecialchars(preg_replace("/,/", " ", $_POST["comment"])));
+			  $comment = htmlspecialchars(preg_replace("/,/", " ", $_POST["comment"]));
 		  }
         $email = san_csv($email);
         $id = protect($id);
