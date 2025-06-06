@@ -38,6 +38,8 @@ header("X-Robots-Tag: noindex");
 
 $captch = false;
 
+$special=["nov25climat"=>["I am coming... ", "Both days (Nov. 12 and 13)", "Nov 12 only", "Nov 13 only"]];
+
 function checkRecaptcha()
 {
     global $captch;
@@ -117,7 +119,7 @@ function unsubLink($nompre,$mail) {
 
 function formInscription()
 {
-    global $id, $secret1, $secret2,$captch,$expired;
+    global $id, $secret1, $secret2,$captch,$expired,$special;
 	 if($expired) return;
     gen_xtok("event");
     ?>
@@ -133,6 +135,13 @@ function formInscription()
     <?php if ($captch) {
         ?><tr><td colspan=2><div class="g-recaptcha" data-sitekey="6LfllnEUAAAAABxznBVTJa5EsU2AlSkIyqtICE4w"></div><?php
     }?>
+	 <?php if(isset($special[$id])) {
+		 $tab=$special[$id];
+		 ?><tr><td><label for="comment"><?php print $tab[0]; ?></label><td><select id=comment name=comment>
+		 <?php for($i=1; $i<count($tab); $i++) { ?>
+		 <option value=\"<?php print $tab[$i]; ?>\"><?php print $tab[$i]; ?></option>
+		 <?php } ?></select>
+	<?php } ?>
 <tr><td colspan="2" style="text-align:center"><button type="submit" >Submit</button>
 </table>
 </form>
