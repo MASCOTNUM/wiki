@@ -97,7 +97,7 @@ function listeInscrits()
 		 array_push($listeMailsA, $l['mail']);
         $out .= "<li><b>" . $l['nomprenom'] . "</b>, " . $l['affiliation'];
         if (voitMails()) {
-            $out .= ", " . $l['mail'] . ($l['comment']!='' ? "[".$l['comment']."]" : '') . " <a href=\"".unsubLink($l['nomprenom'],$l['mail'])."\" target=_blank>cancel registration</a></li>";
+            $out .= ", " . $l['mail'] . ($l['comment']!='' ? " [".$l['comment']."]" : '') . " <a href=\"".unsubLink($l['nomprenom'],$l['mail'])."\" target=_blank>cancel registration</a></li>";
 				if($l['comment']!='') {
 					if(!isset($counts[$l['comment']])) $counts[$l['comment']]=1;
 					else $counts[$l['comment']]++;
@@ -225,8 +225,8 @@ Your registration has been taken into account.
 
 Name:        " . $nom . ", " . $prenom . "
 Affiliation: " . $affil . "
-Email:       " . $email . 
-($comment ? $comment : "") ."
+Email:       " . $email . "
+" . ($comment ? $comment : "") ."
 
 For more information, please consult " . pageLink($id, true)."
 
