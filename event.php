@@ -151,7 +151,7 @@ function formInscription()
 		 $tab=$special[$id];
 		 ?><tr><td><label for="comment"><?php print $tab[0]; ?></label><td><select id=comment name=comment>
 		 <?php for($i=1; $i<count($tab); $i++) { ?>
-		 <option value=\"<?php print $tab[$i]; ?>\"><?php print $tab[$i]; ?></option>
+		 <option value="<?php print $tab[$i]; ?>"><?php print $tab[$i]; ?></option>
 		 <?php } ?></select>
 	<?php } ?>
 <tr><td colspan="2" style="text-align:center"><button type="submit" >Submit</button>
