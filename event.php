@@ -113,7 +113,7 @@ function listeInscrits()
 				foreach($counts as $k=>$v) {
 					$out.="<tr><td>$k<td>$v";
 				}
-				$out.="</table>";
+				$out.="</table><p>";
 		  }
     }
     return $out;
