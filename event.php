@@ -38,7 +38,7 @@ header("X-Robots-Tag: noindex");
 
 $captch = false;
 
-$special=["nov25climat"=>["I am coming... ", "Both days (Nov. 12 and 13)", "Nov 12 only", "Nov 13 only"]];
+$special=["nov25climat"=>["I am coming... ", "Both days (Nov. 12 and 13)", "Nov. 12 only", "Nov. 13 only"]];
 
 function checkRecaptcha()
 {
@@ -91,18 +91,30 @@ function listeInscrits()
     $res = $db->query("SELECT DISTINCT * FROM inscrits WHERE idrencontre='" . $db->escapeString($id) . "' ORDER BY nomprenom");
 	 $listeMailsA=array();
     $out = "<ul>";
+	 $counts=[];
     while ($l = $res->fetchArray()) {
 		 if(in_array($l['mail'],$listeMailsA,true)) continue;
 		 array_push($listeMailsA, $l['mail']);
         $out .= "<li><b>" . $l['nomprenom'] . "</b>, " . $l['affiliation'];
         if (voitMails()) {
-            $out .= ", " . $l['mail'] . " <a href=\"".unsubLink($l['nomprenom'],$l['mail'])."\" target=_blank>cancel registration</a></li>";
+            $out .= ", " . $l['mail'] . ($l['comment']!='' ? "[".$l['comment']."]" : '') . " <a href=\"".unsubLink($l['nomprenom'],$l['mail'])."\" target=_blank>cancel registration</a></li>";
+				if($l['comment']!='') {
+					if(!isset($counts[$l['comment']])) $counts[$l['comment']]=1;
+					else $counts[$l['comment']]++;
+				}
         }
     }
 	 $listeMails = implode(",",$listeMailsA);
     $out .= "</ul>";
     if (voitMails()) {
         $out .= "<textarea rows=10 cols=60>$listeMails</textarea><p><b>".count($listeMailsA)." inscrits</b><p>";
+		  if(count($counts)>0) {
+				$out.="<table>";
+				foreach($counts as $k=>$v) {
+					$out.="<tr><td>$k<td>$v";
+				}
+				$out.="</table>";
+		  }
     }
     return $out;
 }
@@ -188,6 +200,10 @@ if (!empty($_POST['nom'])) {
         $affil = str_replace("&amp;","&",san_csv_ext(htmlspecialchars(preg_replace("/,/", " ", $_POST["affil"]))));
         $nom = protect(htmlspecialchars(preg_replace("/,/", " ", $_POST["nom"])));
         $email = protect(htmlspecialchars(preg_replace("/,/", " ", $_POST["email"])));
+		  $comment = false;
+		  if(isset($_POST["comment"])) {
+			  $comment = protect(htmlspecialchars(preg_replace("/,/", " ", $_POST["comment"])));
+		  }
         $email = san_csv($email);
         $id = protect($id);
         $mnotif = $mailNotify["change"];
@@ -197,13 +213,20 @@ if (!empty($_POST['nom'])) {
             die("db error insert " . $db->lastErrorMsg());
         }
 
+		  if($comment) {
+			  if(! $db->exec("UPDATE inscrits SET comment='".$db->escapeString($comment)."' WHERE idrencontre='".$db->escapeString($id)."' AND mail='".$db->escapeString($email)."'")) {
+				  die("db error insert ".$db->lastErrorMsg());
+			  }
+		  }
+
         foreach ($mnotif as $notif) {
             xmail($notif, "Registration to $id", "
 Your registration has been taken into account.
 
 Name:        " . $nom . ", " . $prenom . "
 Affiliation: " . $affil . "
-Email:       " . $email . "
+Email:       " . $email . 
+($comment ? $comment : "") ."
 
 For more information, please consult " . pageLink($id, true)."
 
