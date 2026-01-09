@@ -565,7 +565,7 @@ function render_html($str, $pageId = "", $title = "")
 	$actions = "";
 	if (!empty($pageId)) {
 		if (!empty(get_login())) {
-				$actions = (auth_canEdit($pageId) ? "<a href=\"index.php?do=edit&id=$pageId\">Edit this page</a>" : "") .
+				$actions = (auth_canEdit($pageId) ? "<a href=\"index.php?do=edit&id=$pageId\">Edit this page</a>" : "<span title=\"Insufficient rights\" class=disbl>&#10006; Edit this page</span>") .
 							(auth_isCommittee() ? "<a href=\"index.php?do=revisions&id=$pageId\">Old revisions</a>" : "") .
 								(auth_isAdmin() ? "<a href=\"index.php?do=edit&id=sidebar\">Edit sidebar</a><a href=admpasswd.php>Edit passwd / perms</a>" : "") .
 								(auth_isAdmin() && file_exists($editableDir . "/" . $pageId) ? "<a href=\"index.php?do=revokeEdit&id=$pageId\">Unset contrib-writable</a>" : "") .
