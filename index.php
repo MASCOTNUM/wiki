@@ -49,6 +49,14 @@ if (empty($_GET['id'])) {
 }
 
 if (empty($_GET['do']) && empty($_POST['do'])) {
+	if(!file_exists($pageDir."/$pageId.txt")) {
+		header("HTTP/1.1 404 Not found");
+		print "Page not found. ";
+		if (!empty(get_login()) && auth_isCommittee()) {
+			print "<a href=\"index.php?do=edit&id=$pageId\">Create this page</a>";
+		}
+		exit;
+	}
 	$etag="\"".base64url_encode(md5(get_login().$pageId.file_get_contents("commit").filemtime($pageDir."/$pageId.txt"), true))."\"";
 	header("Etag: $etag");
 	header("Cache-control: private, max-age=0");
