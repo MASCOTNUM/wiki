@@ -172,10 +172,10 @@ file_put_contents("ephemeral/rssshort.html", lastshort());
 */
 
 file_put_contents("ephemeral/hal.html", updhal());
+include_once "cron-ml.php";
 foreach (array("index","newsletter","documents") as $p) {
     if (file_exists("ephemeral/cache/$p")) {
         unlink("ephemeral/cache/$p");
     }
 }
-include_once "cron-ml.php";
 
