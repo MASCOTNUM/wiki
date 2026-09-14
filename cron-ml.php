@@ -6,7 +6,7 @@ $mlnom='rt-uq-news';
 $ok=false;
 $sess="";
 foreach([1,2] as $i) {
-	$pr=proc_open(['/bin/httpsget',$mlhost,'443',$mlpref,"1"],[1=>['pipe','w'], 2=>['pipe','w']],$pipes,null,["METHOD=POST",($sess=="" ? "" : "ADD_HDR=Cookie: $sess"), "FORM=action=arc&list=$mlnom&response_action_confirm="]);
+	$pr=proc_open(['/bin/httpsget',$mlhost,'443',$mlpref,"1"],[1=>['pipe','w'], 2=>['pipe','w']],$pipes,null,["METHOD=POST", "ADD_HDR=Cookie: $sess", "FORM=action=arc&list=$mlnom&response_action_confirm="]);
 	$s="";
 	if($i==1) {
 		while($h=fread($pipes[2], 8192)) $s.=$h;
