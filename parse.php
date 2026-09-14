@@ -406,6 +406,8 @@ function parse_line($l)
 								$out .= file_get_contents("ephemeral/rss2.html");
 						} elseif ($s == "rssshort") {
 								$out .= file_get_contents("ephemeral/rssshort.html");
+						} elseif ($s == "mlmsgs") {
+								$out .= file_get_contents("ephemeral/mlmsgs.html");
 						} elseif ($s == "swupdates" && $pageId!="software_updates") {
 								$pageIdx=$pageId;
 								$pageId="software_updates";

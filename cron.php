@@ -177,3 +177,5 @@ foreach (array("index","newsletter","documents") as $p) {
         unlink("ephemeral/cache/$p");
     }
 }
+include_once "cron-ml.php";
+
