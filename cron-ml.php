@@ -2,37 +2,21 @@
 $mlhost='listes.math.cnrs.fr';
 $mlpref='/wws';
 $mlnom='rt-uq-news';
-$pr=proc_open(['/bin/httpsget',$mlhost,'443',$mlpref,"1"],[1=>['pipe','w'], 2=>['pipe','w']],$pipes,null,[]);
-$s="";
-while($h=fread($pipes[2], 8192)) $s.=$h;
-$s=explode("\n", $s);
-foreach($s as $ss) {
-	if(stripos($ss, "set-cookie: ")===0) {
-		$sess=substr($ss, strlen("set-cookie: "), strpos($ss, ";")-strlen("set-cookie: "));
-	}
-}
-/*
-$s="";
-while($h=fread($pipes[1], 8192)) $s.=$h;
-$s=explode("\n", $s);
-foreach($s as $ss) {
-	if(stripos($ss, "\"csrftoken\"")!==false) {
-		$csrf=substr($ss, stripos($ss, "value=\"")+strlen("value=\""));
-		$csrf=substr($csrf, 0, stripos($csrf, "\""));
-		break;
-	}
-}
-*/
-//print "sess: $sess csrf: $csrf\n";
-proc_close($pr);
 
 $ok=false;
+$sess="";
 foreach([1,2] as $i) {
-	//$pr=proc_open(['/bin/httpsget',$mlhost,'443',$mlpref,"1"],[1=>['pipe','w'], 2=>['pipe','w']],$pipes2,null,["METHOD=POST","ADD_HDR=Cookie: $sess", "FORM=csrftoken=$csrf&month=&arc_file=&action=arc&list=rt-uq-news&previous_action=&response_action_confirm=Je+ne+suis+pas+un+spameur"]);
-	$pr=proc_open(['/bin/httpsget',$mlhost,'443',$mlpref,"1"],[1=>['pipe','w'], 2=>['pipe','w']],$pipes2,null,["METHOD=POST","ADD_HDR=Cookie: $sess", "FORM=action=arc&list=$mlnom&response_action_confirm="]);
+	$pr=proc_open(['/bin/httpsget',$mlhost,'443',$mlpref,"1"],[1=>['pipe','w'], 2=>['pipe','w']],$pipes,null,["METHOD=POST",($sess=="" ? "" : "ADD_HDR=Cookie: $sess"), "FORM=action=arc&list=$mlnom&response_action_confirm="]);
 	$s="";
-	while($h=fread($pipes2[1], 8192)) $s.=$h;
-	if(stripos($s, "302 moved")!==false) $ok=true;
+	if($i==1) {
+		while($h=fread($pipes[2], 8192)) $s.=$h;
+		$sess=substr($s, stripos($s, "set-cookie: ")+strlen("set-cookie: "));
+		$sess=substr($sess, 0, stripos($sess, ";"));
+	} else {
+		$s="";
+		while($h=fread($pipes[1], 8192)) $s.=$h;
+		if(stripos($s, "302 moved")!==false) $ok=true;
+	}
 	proc_close($pr);
 }
 
@@ -49,18 +33,18 @@ $month=date('m');
 $year=date('Y');
 $out="<ul>\n";
 while($nLu < $nLuMax && $nTry < $nTryMax) {
-	print "$month - $year...";
 	$pr=proc_open(['/bin/httpsget',$mlhost,'443',"$mlpref/arc/$mlnom/$year-$month/","1"],[1=>['pipe','w'], 2=>['pipe','w']],$pipes,null,["ADD_HDR=Cookie: $sess"]);
 	$s="";
 	while($h=fread($pipes[1], 8192)) $s.=$h;
 	proc_close($pr);
 	$s=explode("\n", $s);
-	$s=array_reverse($s);
-	foreach($s as $ss) {
-		if($nLu >= $nLuMax) break;
+	$nn=count($s);
+	for($i=$nn-1; $i>=0 && $nLu<$nLuMax; $i--) {
+		$ss=$s[$i];
 		if(stripos($ss, "href=\"msg")!==false && stripos($ss, ".html\">[$mlnom] ")!==false) {
 			$lnk=substr($ss, stripos($ss, "href=\"msg")+strlen("href=\""));
 			$lnk=substr($lnk, 0, stripos($lnk, ">")-1);
+			$lnk=str_replace("\"", "", $lnk);
 			$subj=substr($ss, stripos($ss, "[$mlnom] ")+strlen("[$mlnom] "));
 			$subj=substr($subj, 0, stripos($subj, "<"));
 			$out.="<li><a href=\"https://$mlhost$mlpref/arc/$mlnom/$year-$month/$lnk\">$subj</a>\n";
