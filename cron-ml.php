@@ -9,11 +9,12 @@ foreach([1,2] as $i) {
 	$pr=proc_open(['/bin/httpsget',$mlhost,'443',$mlpref,"1"],[1=>['pipe','w'], 2=>['pipe','w']],$pipes,null,["METHOD=POST", "ADD_HDR=Cookie: $sess", "FORM=action=arc&list=$mlnom&response_action_confirm="]);
 	$s="";
 	if($i==1) {
+		fclose($pipes[1]);
 		while($h=fread($pipes[2], 8192)) $s.=$h;
 		$sess=substr($s, stripos($s, "set-cookie: ")+strlen("set-cookie: "));
 		$sess=substr($sess, 0, stripos($sess, ";"));
 	} else {
-		$s="";
+		fclose($pipes[2]);
 		while($h=fread($pipes[1], 8192)) $s.=$h;
 		if(stripos($s, "302 moved")!==false) $ok=true;
 	}
@@ -33,7 +34,7 @@ $month=date('m');
 $year=date('Y');
 $out="<ul>\n";
 while($nLu < $nLuMax && $nTry < $nTryMax) {
-	$pr=proc_open(['/bin/httpsget',$mlhost,'443',"$mlpref/arc/$mlnom/$year-$month/","1"],[1=>['pipe','w'], 2=>['pipe','w']],$pipes,null,["ADD_HDR=Cookie: $sess"]);
+	$pr=proc_open(['/bin/httpsget',$mlhost,'443',"$mlpref/arc/$mlnom/$year-$month/"],[1=>['pipe','w']],$pipes,null,["ADD_HDR=Cookie: $sess"]);
 	$s="";
 	while($h=fread($pipes[1], 8192)) $s.=$h;
 	proc_close($pr);
@@ -43,8 +44,7 @@ while($nLu < $nLuMax && $nTry < $nTryMax) {
 		$ss=$s[$i];
 		if(stripos($ss, "href=\"msg")!==false && stripos($ss, ".html\">[$mlnom] ")!==false) {
 			$lnk=substr($ss, stripos($ss, "href=\"msg")+strlen("href=\""));
-			$lnk=substr($lnk, 0, stripos($lnk, ">")-1);
-			$lnk=str_replace("\"", "", $lnk);
+			$lnk=substr($lnk, 0, stripos($lnk, "\""));
 			$subj=substr($ss, stripos($ss, "[$mlnom] ")+strlen("[$mlnom] "));
 			$subj=substr($subj, 0, stripos($subj, "<"));
 			$out.="<li><a href=\"https://$mlhost$mlpref/arc/$mlnom/$year-$month/$lnk\">$subj</a>\n";
@@ -60,5 +60,5 @@ while($nLu < $nLuMax && $nTry < $nTryMax) {
 	}
 }
 $out .= "</ul>\n";
-file_put_contents("ephemeral/mlmsgs.html", $out);
+file_put_contents("ephemeral/mlmsgs.html", $out, LOCK_EX);
 
